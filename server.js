@@ -14,12 +14,26 @@ http.createServer(function(req, res) {
     res.end();
   };
 
+
   var resolvedPath = path.resolve(path.join(public, req.url));
-  if (resolvedPath.indexOf(public) === 0) {
-    var fileStream = fs.createReadStream(resolvedPath);
-    fileStream.on('error', send404);
-    fileStream.pipe(res);
-  }
-  else { send404(); }
+
+  fs.stat(resolvedPath, function(err, stats) {
+    if (stats.isDirectory()) {
+      resolvedPath = path.join(resolvedPath, 'index.html');
+    }
+
+    if (resolvedPath.indexOf(public) === 0) {
+      var fileStream = fs.createReadStream(resolvedPath);
+      fileStream.on('error', function() {
+        send404();
+      });
+      fileStream.pipe(res);
+    }
+    else {
+      send404();
+    }
+
+  });
+
 
 }).listen(3030);
