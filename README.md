@@ -13,6 +13,7 @@ If you want to manually test a post request, one way to do so is:
 
 ```
 curl --data "name=Whitney" http://localhost:3030/api/people
+curl -X PUT --data "name=Whit" http://localhost:3030/api/people/1
 ```
 
 [express]: http://expressjs.com
