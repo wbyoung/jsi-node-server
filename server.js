@@ -114,6 +114,18 @@ http.createServer(function(req, res) {
     }
     else { send404(); }
   }
+  else if (req.method === 'DELETE' &&
+    (match = req.url.match(/^\/api\/people\/(\d+)$/))) {
+    var id = match[1];
+    if (people[id]) {
+      people = _.omit(people, id);
+      res.end(JSON.stringify({
+        people: _.values(people),
+        status: 'ok'
+      }));
+    }
+    else {send404();}
+  }
   else {
     if (resolvedPath.indexOf(public) === 0) { sendFile(); }
     else { send404(); }
