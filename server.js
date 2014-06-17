@@ -96,4 +96,4 @@ http.createServer(function(req, res) {
     else { send404(); }
   }
 
-}).listen(3030);
+}).listen(process.argv[2] || 3030);
