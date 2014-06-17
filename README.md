@@ -9,4 +9,10 @@ off of this and absolutely should not use it in production.
 
 Don't use this. Use [something else][express].
 
+If you want to manually test a post request, one way to do so is:
+
+```
+curl --data "name=Whitney" http://localhost:3030/api/people
+```
+
 [express]: http://expressjs.com
