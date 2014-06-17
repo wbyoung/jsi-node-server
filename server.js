@@ -16,6 +16,22 @@ http.createServer(function(req, res) {
   console.log('[%s]: %s %s',
     req.connection.remoteAddress, req.method, req.url);
 
+  var findNext = function (obj) {
+    var nextUnique = _.size(obj);
+
+    var iterate = function (obj) {
+      if (obj[nextUnique]) {
+        nextUnique += 1;
+        console.log(nextUnique);
+        iterate(obj);
+      }
+      else {return nextUnique;}
+    };
+
+    iterate(obj);
+    return nextUnique;
+  };
+
   var sendStatusCode = function(code, message) {
     res.writeHead(code);
     res.write(message);
@@ -62,7 +78,8 @@ http.createServer(function(req, res) {
     });
     req.on('end', function() {
       var bodyObject = qs.parse(body);
-      var id = _.size(people) + 1;
+      var id = findNext(people);
+      console.log('received from findNext :' + id);
       var newPerson = {
         id: id,
         name: bodyObject.name
