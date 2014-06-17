@@ -91,6 +91,29 @@ http.createServer(function(req, res) {
       }));
     }
   }
+  else if (req.method === 'PUT' &&
+    (match = req.url.match(/^\/api\/people\/(\d+)$/))) {
+    var id = match[1];
+    if (people[id]) {
+      var body = '';
+      var bodyObject = {};
+      req.on('data', function(data) {
+        body += data.toString();
+      });
+      req.on('end', function() {
+        bodyObject = qs.parse(body);
+        bodyObject.id = id;
+        people[id] = bodyObject;
+        if (bodyObject) {
+          res.end(JSON.stringify({
+            person: bodyObject,
+            status: 'ok'
+          }));
+        }
+      });
+    }
+    else { send404(); }
+  }
   else {
     if (resolvedPath.indexOf(public) === 0) { sendFile(); }
     else { send404(); }
