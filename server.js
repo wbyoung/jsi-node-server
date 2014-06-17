@@ -25,6 +25,7 @@ http.createServer(function(req, res) {
   var send500 = _.partial(sendStatusCode, 500, 'Server Error');
   var send404 = _.partial(sendStatusCode, 404, 'Not Found');
 
+  var match;
   var resolvedPath = path.resolve(path.join(public, req.url));
   var sendFile = function() {
     var fileStream = fs.createReadStream(resolvedPath);
@@ -72,6 +73,23 @@ http.createServer(function(req, res) {
         status: 'ok'
       }));
     });
+  }
+  else if (req.method === 'GET' &&
+    (match = req.url.match(/^\/api\/people\/(\d+)$/))) {
+    var id = match[1];
+    var person = people[id];
+    if (person) {
+      res.end(JSON.stringify({
+        person: person,
+        status: 'ok'
+      }));
+    }
+    else {
+      res.writeHead(404);
+      res.end(JSON.stringify({
+        status: 'not found'
+      }));
+    }
   }
   else {
     if (resolvedPath.indexOf(public) === 0) { sendFile(); }
