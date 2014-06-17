@@ -1,3 +1,8 @@
+/* jshint node:true */
+// 'use strict';
+var http = require('http');
+var path = require('path');
+var fs = require('fs');
 var _ = require('lodash');
 var http = require('http');
 var path = require('path');
@@ -91,6 +96,50 @@ http.createServer(function(req, res) {
       }));
     }
   }
+  else if(req.method === 'PUT' &&
+    (match = req.url.match(/^\/api\/people\/(\d+)$/))) {
+    var body = '';
+    var id = match[1];
+    var person = people[id];
+    if (person) {
+      req.on('data', function(data) {
+        body += data.toString();
+      });
+
+      req.on('end', function() {
+        var bodyObject = qs.parse(body);
+        people[id].name = bodyObject.name;
+        res.end(JSON.stringify({
+          person: people[id],
+          status: 'updated'
+        }));
+      });
+    }
+    else {
+      res.writeHead(404);
+      res.end(JSON.stringify({
+        status: 'not found'
+      }));
+    }
+  }
+  else if (req.method === 'DELETE' &&
+    (match = req.url.match(/^\/api\/people\/(\d+)$/))) {
+    var id = match[1];
+    var person = people[id];
+    if (person) {
+      delete people[id];
+      res.end(JSON.stringify({
+        status: 'deleted'
+      }));
+    }
+    else {
+      res.writeHead(404);
+      res.end(JSON.stringify({
+        status: 'not found'
+      }));
+    }
+  }
+
   else {
     if (resolvedPath.indexOf(public) === 0) { sendFile(); }
     else { send404(); }
